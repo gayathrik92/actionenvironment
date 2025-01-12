@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
 	  index_document:
-	    default:'index.html'
+	    default: 'index.html'
 	  error_document:
-        default:'error.html'	  
+        default: 'error.html'	  
 env:
   BUCKET_NAME:website-artifacts		
   
