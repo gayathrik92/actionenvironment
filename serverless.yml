@@ -1,0 +1,35 @@
+name: Deploy to AWS Lambda
+
+on:
+  push:
+    branches:
+      - release/*  # Triggers the deployment for branches like release/xyz
+
+env:
+  RELEASE_NAME: ${GITHUB_REF##*release/}  # Extracts the release name from the GitHub branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up NodeJS
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+
+    - name: Install dependencies
+      run: |
+        npm ci  # Install dependencies based on package-lock.json
+        npm install -g serverless  # Install the Serverless Framework globally
+
+    - name: Deploy to AWS Lambda using Serverless Framework
+      run: |
+        serverless deploy --stage ${RELEASE_NAME}  # Deploy to the correct stage
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: us-east-1  # Optional, specify your AWS region (if not already set in serverless.yml)
